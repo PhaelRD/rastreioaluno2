@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">rastreioaluno2</string>
+
+        <!-- Outras entradas de strings -->
+        <string name="back_button_description">Voltar</string>
+
+
+</resources>
