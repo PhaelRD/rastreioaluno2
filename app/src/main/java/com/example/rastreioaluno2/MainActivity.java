@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                         String userId = user.getUid();
 
                         // Buscar o userType no Realtime Database
-                        mDatabase.child("users").child(userId).child("info").child("userType")
+                        mDatabase.child("users").child(userId).child("userType")
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void handleFirebaseAuthError(Exception exception) {
         if (exception instanceof FirebaseAuthException) {

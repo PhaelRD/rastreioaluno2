@@ -42,6 +42,7 @@ public class CreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
 
+        // Initialize UI elements
         trackingNameEditText = findViewById(R.id.tracking_name);
         schoolAddressEditText = findViewById(R.id.school_address);
         homeAddressEditText = findViewById(R.id.home_address);
@@ -96,22 +97,26 @@ public class CreateActivity extends AppCompatActivity {
 
     private void populateTransportSpinner() {
         // Get transport users from the database and populate spinner
-        usersRef.orderByChild("role").equalTo("transport").addValueEventListener(new ValueEventListener() {
+        usersRef.orderByChild("info/userType").equalTo("Transporte Escolar").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Clear previous data
                 transportUserNames.clear();
                 transportUserShortIds.clear();
 
+                // Iterate through each user in the snapshot
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String name = snapshot.child("name").getValue(String.class);
-                    String shortId = snapshot.child("shortId").getValue(String.class);
+                    String name = snapshot.child("info").child("name").getValue(String.class);
+                    String shortId = snapshot.child("shortUserId").getValue(String.class);
 
+                    // Ensure both name and shortId are not null
                     if (name != null && shortId != null) {
                         transportUserNames.add(name);
                         transportUserShortIds.add(shortId);
                     }
                 }
 
+                // Create and set the adapter for the spinner
                 spinnerAdapter = new ArrayAdapter<>(CreateActivity.this, android.R.layout.simple_spinner_item, transportUserNames);
                 spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 transportSpinner.setAdapter(spinnerAdapter);
@@ -136,20 +141,28 @@ public class CreateActivity extends AppCompatActivity {
             return;
         }
 
-        // Save tracking info to the database (example implementation)
-        DatabaseReference trackingRef = FirebaseDatabase.getInstance().getReference("trackings");
+        // Get current user UID
+        String userId = auth.getCurrentUser().getUid();
+
+        // Reference to the user's "trackings" node
+        DatabaseReference trackingRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("trackings");
         String id = trackingRef.push().getKey();
         Tracking tracking = new Tracking(trackingName, schoolAddress, homeAddress, transportUid, studentUid);
-        trackingRef.child(id).setValue(tracking);
+        trackingRef.child(id).setValue(tracking)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "Tracking registered successfully.", Toast.LENGTH_SHORT).show();
 
-        Toast.makeText(this, "Tracking registered successfully.", Toast.LENGTH_SHORT).show();
-
-        // Clear input fields
-        trackingNameEditText.setText("");
-        schoolAddressEditText.setText("");
-        homeAddressEditText.setText("");
-        transportUidEditText.setText("");
-        studentUidEditText.setText("");
+                        // Clear input fields
+                        trackingNameEditText.setText("");
+                        schoolAddressEditText.setText("");
+                        homeAddressEditText.setText("");
+                        transportUidEditText.setText("");
+                        studentUidEditText.setText("");
+                    } else {
+                        Toast.makeText(this, "Failed to register tracking.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private static class Tracking {
