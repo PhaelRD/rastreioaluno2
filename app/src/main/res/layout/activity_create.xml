@@ -32,7 +32,7 @@
             android:id="@+id/create_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Registrar Novo Rastreio"
+            android:text="Criar ou Editar Rastreio"
             android:textColor="@color/colorAccent"
             android:textSize="24sp"
             android:textStyle="bold"

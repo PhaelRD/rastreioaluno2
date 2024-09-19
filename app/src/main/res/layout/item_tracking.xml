@@ -4,20 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@color/buttonTextColor"
-    android:gravity="center_vertical">
+    android:background="@drawable/rounded_corners_all"
+    android:gravity="center_vertical"
+    android:layout_marginBottom="4dp"> <!-- Espaço transparente abaixo -->
 
-    <!-- Nome do rastreio -->
     <TextView
         android:id="@+id/tracking_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="18sp"
+        android:paddingEnd="8dp"
         android:textColor="@android:color/white"
-        android:paddingEnd="8dp"/>
+        android:textSize="18sp"
+        android:gravity="center_horizontal" />
 
-    <!-- Botão de editar -->
     <ImageButton
         android:id="@+id/edit_button"
         android:layout_width="wrap_content"
@@ -27,14 +27,12 @@
         android:background="@color/colorPrimary"
         android:padding="15dp"/>
 
-    <!-- Botão de excluir -->
     <ImageButton
         android:id="@+id/delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_menu_delete"
         android:contentDescription="Delete"
-        android:background="@android:color/holo_red_dark"
+        android:background="@drawable/rounded_corners_right"
         android:padding="15dp"/>
-
 </LinearLayout>

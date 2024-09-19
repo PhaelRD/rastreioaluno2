@@ -36,6 +36,8 @@ public class CreateActivity extends AppCompatActivity {
     private List<String> transportUserShortIds;
     private ArrayAdapter<String> spinnerAdapter;
     private FirebaseAuth auth;
+    private String trackingId; // ID do rastreio a ser editado
+    private boolean isEditing = false; // Flag para verificar se está em modo de edição
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +63,24 @@ public class CreateActivity extends AppCompatActivity {
         // Populate the Spinner
         populateTransportSpinner();
 
-        // Set click listener for the register button
+        // Check if editing an existing tracking
+        Intent intent = getIntent();
+        trackingId = intent.getStringExtra("TRACKING_ID");
+        if (trackingId != null) {
+            isEditing = true;
+            loadTrackingData(trackingId);
+            registerTrackingButton.setText("Update Tracking");
+        }
+
+        // Set click listener for the register/update button
         registerTrackingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                registerTracking();
+                if (isEditing) {
+                    updateTracking();
+                } else {
+                    registerTracking();
+                }
             }
         });
 
@@ -159,8 +174,66 @@ public class CreateActivity extends AppCompatActivity {
                         homeAddressEditText.setText("");
                         transportUidEditText.setText("");
                         studentUidEditText.setText("");
+
+                        // Go back to HomeActivity
+                        Intent intent = new Intent(CreateActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                        finish(); // Close the current activity
                     } else {
                         Toast.makeText(this, "Failed to register tracking.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void loadTrackingData(String trackingId) {
+        String userId = auth.getCurrentUser().getUid();
+        DatabaseReference trackingRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("trackings").child(trackingId);
+
+        trackingRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Tracking tracking = dataSnapshot.getValue(Tracking.class);
+                    if (tracking != null) {
+                        trackingNameEditText.setText(tracking.trackingName);
+                        schoolAddressEditText.setText(tracking.schoolAddress);
+                        homeAddressEditText.setText(tracking.homeAddress);
+                        transportUidEditText.setText(tracking.transportUid);
+                        studentUidEditText.setText(tracking.studentUid);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(CreateActivity.this, "Failed to load tracking data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateTracking() {
+        String trackingName = trackingNameEditText.getText().toString().trim();
+        String schoolAddress = schoolAddressEditText.getText().toString().trim();
+        String homeAddress = homeAddressEditText.getText().toString().trim();
+        String transportUid = transportUidEditText.getText().toString().trim();
+        String studentUid = studentUidEditText.getText().toString().trim();
+
+        if (trackingName.isEmpty() || schoolAddress.isEmpty() || homeAddress.isEmpty() || transportUid.isEmpty() || studentUid.isEmpty()) {
+            Toast.makeText(this, "Please fill out all fields.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = auth.getCurrentUser().getUid();
+        DatabaseReference trackingRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("trackings").child(trackingId);
+        Tracking tracking = new Tracking(trackingName, schoolAddress, homeAddress, transportUid, studentUid);
+
+        trackingRef.setValue(tracking)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "Tracking updated successfully.", Toast.LENGTH_SHORT).show();
+                        finish(); // Close activity and return to previous screen
+                    } else {
+                        Toast.makeText(this, "Failed to update tracking.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -178,6 +251,10 @@ public class CreateActivity extends AppCompatActivity {
             this.homeAddress = homeAddress;
             this.transportUid = transportUid;
             this.studentUid = studentUid;
+        }
+
+        public Tracking() {
+            // Default constructor required for calls to DataSnapshot.getValue(Tracking.class)
         }
     }
 }

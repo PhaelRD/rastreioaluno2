@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">rastreioaluno2</string>
 
-        <!-- Outras entradas de strings -->
-        <string name="back_button_description">Voltar</string>
+    <!-- Outras entradas de strings -->
+    <string name="back_button_description">Voltar</string>
+    <string name="title_activity_maps">MapsActivity</string>
 
 </resources>

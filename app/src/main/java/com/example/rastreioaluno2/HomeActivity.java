@@ -1,5 +1,6 @@
 package com.example.rastreioaluno2;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -128,14 +129,28 @@ public class HomeActivity extends AppCompatActivity {
             Tracking tracking = trackingList.get(position);
             holder.trackingNameText.setText(tracking.getTrackingName());
 
-            holder.editButton.setOnClickListener(v -> {
-                // Função do botão de editar não implementada ainda
-                Toast.makeText(HomeActivity.this, "Edit button clicked", Toast.LENGTH_SHORT).show();
+            // Handle item click to navigate to TrackingActivity
+            holder.itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(HomeActivity.this, TrackingActivity.class);
+                intent.putExtra("TRACKING_ID", tracking.getId()); // Passa o ID do rastreio para a TrackingActivity
+                startActivity(intent);
             });
 
+            // Handle edit button click
+            holder.editButton.setOnClickListener(v -> {
+                Intent intent = new Intent(HomeActivity.this, CreateActivity.class);
+                intent.putExtra("TRACKING_ID", tracking.getId()); // Passa o ID do rastreio para a CreateActivity
+                startActivity(intent);
+            });
+
+            // Handle delete button click with confirmation dialog
             holder.deleteButton.setOnClickListener(v -> {
-                // Chama o método para deletar o rastreio
-                deleteTracking(tracking.getId());
+                new AlertDialog.Builder(HomeActivity.this)
+                        .setTitle("Confirmar exclusão")
+                        .setMessage("Você tem certeza de que deseja excluir este rastreio?")
+                        .setPositiveButton("Excluir", (dialog, which) -> deleteTracking(tracking.getId()))
+                        .setNegativeButton("Cancelar", null)
+                        .show();
             });
         }
 
@@ -156,6 +171,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
+
 
     private static class Tracking {
         private String id;
