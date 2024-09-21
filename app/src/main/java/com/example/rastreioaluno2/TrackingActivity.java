@@ -1,7 +1,9 @@
 package com.example.rastreioaluno2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,6 +14,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -60,8 +63,16 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         usersRef = FirebaseDatabase.getInstance().getReference("users");
 
         // Inicializar Views
-        trackingNameText = findViewById(R.id.text_tracking_name);
+        trackingNameText = findViewById(R.id.tracking_name);
         mapView = findViewById(R.id.map_view);
+        ImageButton backButton = findViewById(R.id.back_button);
+
+        // Back button functionality
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(TrackingActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish(); // Close the current activity
+        });
 
         // Configurar o MapView
         mapView.onCreate(savedInstanceState);
@@ -245,26 +256,42 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             boolean hasPoints = false;
 
+            // Ícone personalizado para o estudante
             if (studentLatLng != null) {
-                googleMap.addMarker(new MarkerOptions().position(studentLatLng).title("Student Location"));
+                googleMap.addMarker(new MarkerOptions()
+                        .position(studentLatLng)
+                        .title("Localização do Estudante")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.student_icon))); // Ícone personalizado
                 builder.include(studentLatLng);
                 hasPoints = true;
             }
 
+            // Ícone personalizado para o transporte
             if (transportLatLng != null) {
-                googleMap.addMarker(new MarkerOptions().position(transportLatLng).title("Transport Location"));
+                googleMap.addMarker(new MarkerOptions()
+                        .position(transportLatLng)
+                        .title("Localização do Transporte")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.transport_icon))); // Ícone personalizado
                 builder.include(transportLatLng);
                 hasPoints = true;
             }
 
+            // Ícone padrão para a casa
             if (homeLatLng != null) {
-                googleMap.addMarker(new MarkerOptions().position(homeLatLng).title("Home"));
+                googleMap.addMarker(new MarkerOptions()
+                        .position(homeLatLng)
+                        .title("Casa")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))); // Cor personalizada
                 builder.include(homeLatLng);
                 hasPoints = true;
             }
 
+            // Ícone padrão para a escola
             if (schoolLatLng != null) {
-                googleMap.addMarker(new MarkerOptions().position(schoolLatLng).title("School"));
+                googleMap.addMarker(new MarkerOptions()
+                        .position(schoolLatLng)
+                        .title("Escola")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))); // Cor personalizada
                 builder.include(schoolLatLng);
                 hasPoints = true;
             }
