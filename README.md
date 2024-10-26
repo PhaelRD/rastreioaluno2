@@ -1,9 +1,3 @@
-![Imagem do WhatsApp de 2024-10-25 à(s) 22 29 09_d368ba0e])
-![Imagem do WhatsApp de 2024-10-25 à(s) 22 29 08_db4014a2]()
-![Imagem do WhatsApp de 2024-10-25 à(s) 22 29 08_b13e881a]()
-![Imagem do WhatsApp de 2024-10-25 à(s) 22 29 08_d98e4681]()
-![Imagem do WhatsApp de 2024-10-25 à(s) 22 29 08_8b82f83d]()
-
 <p align="center">
   <img src="https://github.com/user-attachments/assets/4e670723-6a9c-4537-a85b-aac5948e6c90" alt="Image 5" width="200">
   <img src="https://github.com/user-attachments/assets/e37d4686-cf9c-4010-a440-0f3d7115c137" alt="Image 4" width="200">
