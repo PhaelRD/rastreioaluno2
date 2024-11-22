@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4e670723-6a9c-4537-a85b-aac5948e6c90" alt="Image 5" width="200">
+  <img src="https://github.com/user-attachments/assets/e37d4686-cf9c-4010-a440-0f3d7115c137" alt="Image 4" width="200">
+  <img src="https://github.com/user-attachments/assets/79baaf2f-98f1-4a7e-b5d9-ee703671ed95" alt="Image 3" width="200">
+  <img src="https://github.com/user-attachments/assets/01140d42-7597-45e6-b7fa-2eef09cf3a61" alt="Image 2" width="200">
+  <img src="https://github.com/user-attachments/assets/7dfb2554-ba1a-4ca6-9fbf-27d461d9737d" alt="Image 1" width="200">
+</p>
+
+
 # MainActivity.java
 
 ## Descrição Geral
