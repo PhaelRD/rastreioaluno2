@@ -14,6 +14,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -38,7 +39,7 @@ import org.json.JSONException;
 
 public class TrackingActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private TextView trackingNameText;
+    private TextView trackingNameText, locationStatusText;  // Adiciona a referência ao TextView para status
     private DatabaseReference usersRef;
     private FirebaseAuth mAuth;
     private String trackingId;
@@ -64,6 +65,7 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
 
         // Inicializar Views
         trackingNameText = findViewById(R.id.tracking_name);
+        locationStatusText = findViewById(R.id.location_status); // Referência ao TextView de status
         mapView = findViewById(R.id.map_view);
         ImageButton backButton = findViewById(R.id.back_button);
 
@@ -97,7 +99,14 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        updateMap(); // Atualiza o mapa com as localizações atuais
+
+        // Ativar controles de zoom no mapa
+        UiSettings uiSettings = googleMap.getUiSettings();
+        uiSettings.setZoomControlsEnabled(true);
+        uiSettings.setMapToolbarEnabled(true); // Habilita a barra de ferramentas do Google Maps (opcional)
+
+        // Atualiza o mapa com as localizações
+        updateMap();
     }
 
     @Override
@@ -201,6 +210,7 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
                                     transportLatLng = location;
                                 }
                                 updateMap(); // Atualiza o mapa com as localizações mais recentes
+                                updateLocationStatus(); // Atualiza o status da localização
                             }
                         }
                     }
@@ -234,6 +244,7 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
                                 schoolLatLng = latLng;
                             }
                             updateMap(); // Atualiza o mapa com as localizações mais recentes
+                            updateLocationStatus(); // Atualiza o status da localização
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(TrackingActivity.this, "Failed to geocode address.", Toast.LENGTH_SHORT).show();
@@ -301,5 +312,23 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
             }
         }
+    }
+
+    private void updateLocationStatus() {
+        if (studentLatLng != null) {
+            if (homeLatLng != null && isNear(studentLatLng, homeLatLng)) {
+                locationStatusText.setText("Aluno está em casa");
+            } else if (schoolLatLng != null && isNear(studentLatLng, schoolLatLng)) {
+                locationStatusText.setText("Aluno está na escola");
+            } else if (transportLatLng != null && isNear(studentLatLng, transportLatLng)) {
+                locationStatusText.setText("Aluno está no transporte");
+            }
+        }
+    }
+
+    // Método para calcular proximidade entre dois pontos
+    private boolean isNear(LatLng point1, LatLng point2) {
+        double threshold = 0.005; // Aproximadamente 500 metros de distância
+        return Math.abs(point1.latitude - point2.latitude) < threshold && Math.abs(point1.longitude - point2.longitude) < threshold;
     }
 }

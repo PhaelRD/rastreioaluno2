@@ -1,38 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="64dp"
     android:orientation="horizontal"
     android:background="@drawable/rounded_corners_all"
     android:gravity="center_vertical"
-    android:layout_marginBottom="4dp"> <!-- Espaço transparente abaixo -->
+    android:layout_marginBottom="4dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 
+    <!-- Ícone de Exclusão à Esquerda -->
+    <ImageView
+        android:id="@+id/delete_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_delete"
+        android:visibility="gone"
+        android:layout_gravity="center_vertical|start" />
+
+    <!-- Nome do Rastreamento -->
     <TextView
         android:id="@+id/tracking_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingEnd="8dp"
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        android:gravity="center_horizontal" />
+        android:gravity="center_horizontal"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp" />
 
-    <ImageButton
-        android:id="@+id/edit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_edit"
-        android:contentDescription="Edit"
-        android:background="@color/colorPrimary"
-        android:padding="15dp"/>
+    <!-- Ícone de Edição à Direita -->
+    <ImageView
+        android:id="@+id/edit_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_editar"
+        android:visibility="gone"
+        android:layout_gravity="center_vertical|end" />
 
-    <ImageButton
-        android:id="@+id/delete_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_delete"
-        android:contentDescription="Delete"
-        android:background="@drawable/rounded_corners_right"
-        android:padding="15dp"/>
 </LinearLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFEB3B" />  <!-- Cor de fundo da notificação (pode alterar para o que preferir) -->
+    <corners android:radius="16dp" />  <!-- Bordas arredondadas -->
+    <padding
+        android:left="16dp"
+        android:top="8dp"
+        android:right="16dp"
+        android:bottom="8dp" />  <!-- Espaçamento interno -->
+    <elevation android:value="4dp" />  <!-- Sombra para dar efeito de notificação -->
+</shape>

@@ -6,73 +6,83 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundColor">
 
-    <!-- Top Bar with Back Button and Title -->
+    <!-- Todos os elementos no ConstraintLayout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/buttonTextColor"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_revert"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/back_button_description"
+        <!-- Cabeçalho com Botão de Voltar e Título -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@color/backgroundColor"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Botão de Voltar -->
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_back"
+                android:contentDescription="Voltar"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="16dp"/>
+
+            <!-- Título -->
+            <TextView
+                android:id="@+id/tracking_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Nome Rastreio"
+                android:textColor="@color/colorAccent"
+                android:textSize="32sp"
+                android:gravity="center"
+                app:layout_constraintStart_toEndOf="@id/back_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="16dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Fundo arredondado e Mapa -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/map_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_top_left"
+            app:layout_constraintTop_toBottomOf="@id/top_bar"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Status da Localização -->
+            <TextView
+                android:id="@+id/location_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/notification_bg"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="Status: Aguardando localização..."
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:drawableLeft="@drawable/ic_notification"
+            android:drawablePadding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/create_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rastreio"
-            android:textColor="@color/colorAccent"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/back_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <!-- Mapa -->
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/map_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="128dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Scrollable content with Tracking Form -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="65dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/tracking_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nome do Rastreio"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:layout_marginTop="12dp" />
-
-            <TextView
-                android:id="@+id/map_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Status: Aguardando..."
-                android:textColor="@color/colorAccent"
-                android:textSize="16sp"
-                android:layout_marginTop="16dp" />
-        </LinearLayout>
-    </ScrollView>
-
-    <!-- Map View -->
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="710dp"
-        android:layout_gravity="bottom" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

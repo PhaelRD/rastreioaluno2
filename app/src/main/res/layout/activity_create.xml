@@ -1,103 +1,115 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundColor"
     tools:context=".CreateActivity">
 
     <!-- Container fixo para o título e o botão de voltar -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:id="@+id/logo_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/buttonTextColor"
-        android:padding="16dp">
+        android:layout_height="150dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/backgroundColor"
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- Botão de Voltar -->
         <ImageButton
             android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_revert"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/back_button_description"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Voltar"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:layout_marginStart="48dp"/>
 
         <!-- Título Centralizado -->
         <TextView
             android:id="@+id/create_title"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:text="Criar ou Editar Rastreio"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="110dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Registro"
             android:textColor="@color/colorAccent"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/back_button"
-            app:layout_constraintStart_toEndOf="@id/back_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:textSize="32sp" />
+    </LinearLayout>
 
     <!-- Conteúdo rolável abaixo do título fixo -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
-    android:padding="16dp">
+        android:layout_marginTop="150dp"
+        android:padding="16dp"
+        android:background="@drawable/rounded_top_left">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:orientation="vertical">
 
-            <!-- Nome do Rastreio -->
-            <com.google.android.material.textfield.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp">
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center">
+
+                <!-- Nome do Rastreio -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    app:hintTextColor="@color/black"
+                app:boxStrokeColor="@color/black">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tracking_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Nome do Rastreio"/>
+                    android:hint="Nome do Rastreio"
+                    android:textColor="@color/black"
+                android:textColorHint="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Endereço da Escola -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                app:hintTextColor="@color/black"
+                app:boxStrokeColor="@color/black">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/school_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Endereço da Escola"/>
+                    android:hint="Endereço da Escola"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Endereço de Casa -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                app:hintTextColor="@color/black"
+                app:boxStrokeColor="@color/black">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/home_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Endereço de Casa"/>
+                    android:hint="Endereço de Casa"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Dropdown para selecionar "Transporte Escolar" -->
@@ -106,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:text="Transporte Escolar"
                 android:textSize="16sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/black"
                 android:layout_marginTop="24dp"/>
 
             <Spinner
@@ -120,26 +132,34 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                app:hintTextColor="@color/black"
+                app:boxStrokeColor="@color/black">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/transport_uid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="UID do Transporte Escolar"/>
+                    android:hint="UID do Transporte Escolar"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Campo para UID do Aluno -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                app:hintTextColor="@color/black"
+                app:boxStrokeColor="@color/black">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/student_uid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="UID do Aluno"/>
+                    android:hint="UID do Aluno"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Botão para Registrar -->
@@ -147,11 +167,11 @@
                 android:id="@+id/register_tracking_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Registrar Rastreio"
+                android:text="Registrar"
                 android:layout_marginTop="24dp"
                 app:cornerRadius="8dp"
-                app:backgroundTint="@color/colorPrimary"
-                android:textColor="@android:color/black"/>
+                app:backgroundTint="@color/black"
+                android:textColor="@color/white" />
 
         </LinearLayout>
 

@@ -2,21 +2,28 @@ package com.example.rastreioaluno2;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -30,45 +37,125 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private FloatingActionButton fab;
-    private Button logoutButton;
     private FirebaseAuth mAuth;
     private DatabaseReference trackingsRef;
     private RecyclerView trackingRecyclerView;
     private TrackingAdapter trackingAdapter;
     private List<Tracking> trackingList;
+    private List<Tracking> filteredList; // Lista filtrada
+    private FloatingActionButton fab;
+    private ImageButton logoutButton;
+    private EditText searchEditText; // Campo de pesquisa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Inicializar FirebaseAuth
-        mAuth = FirebaseAuth.getInstance();
-        trackingsRef = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid()).child("trackings");
+        initializeFirebase();
+        initializeUI();
+        initializeRecyclerView();
+        initializeSwipeToDelete();
+        initializeFab();
+        initializeLogoutButton();
+        initializeSearch();
+        loadTrackings();
+    }
 
-        // Inicializar RecyclerView e Adapter
+    // Inicializa o Firebase e as referências necessárias
+    private void initializeFirebase() {
+        mAuth = FirebaseAuth.getInstance();
+        trackingsRef = FirebaseDatabase.getInstance().getReference("users")
+                .child(mAuth.getCurrentUser().getUid()).child("trackings");
+    }
+
+    // Inicializa os componentes da interface
+    private void initializeUI() {
         trackingRecyclerView = findViewById(R.id.tracking_recycler_view);
+        logoutButton = findViewById(R.id.logout_button);
+        searchEditText = findViewById(R.id.search_edit_text); // Inicializando o campo de pesquisa
+    }
+
+    // Configura o RecyclerView
+    private void initializeRecyclerView() {
         trackingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         trackingList = new ArrayList<>();
-        trackingAdapter = new TrackingAdapter(trackingList);
+        filteredList = new ArrayList<>(); // Inicializando a lista filtrada
+        trackingAdapter = new TrackingAdapter(filteredList);
         trackingRecyclerView.setAdapter(trackingAdapter);
+    }
 
-        // Carregar rastreios
-        loadTrackings();
-
-        // Inicializar FloatingActionButton
+    // Configura o Floating Action Button (FAB) para criar novos rastreios
+    private void initializeFab() {
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, CreateActivity.class);
             startActivity(intent);
         });
-
-        // Inicializar botão de Logout
-        logoutButton = findViewById(R.id.logout_button);
-        logoutButton.setOnClickListener(v -> logout());
     }
 
+    // Configura o botão de logout
+    private void initializeLogoutButton() {
+        logoutButton.setOnClickListener(v -> {
+            mAuth.signOut(); // Deslogar o usuário
+            Intent intent = new Intent(HomeActivity.this, MainActivity.class); // Redirecionar para a MainActivity
+            startActivity(intent);
+            finish(); // Finalizar a HomeActivity para evitar retorno
+        });
+    }
+
+    // Configura o campo de pesquisa
+    private void initializeSearch() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                filterTrackings(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+    }
+
+    // Filtra a lista de rastreios com base no texto da pesquisa
+    private void filterTrackings(String query) {
+        filteredList.clear();
+        if (query.isEmpty()) {
+            filteredList.addAll(trackingList);
+        } else {
+            for (Tracking tracking : trackingList) {
+                if (tracking.getTrackingName().toLowerCase().contains(query.toLowerCase())) {
+                    filteredList.add(tracking);
+                }
+            }
+        }
+        trackingAdapter.notifyDataSetChanged();
+        resetSwipeBackgroundAndIcons(); // Resetando o estilo dos itens após a pesquisa
+    }
+
+    // Método para resetar o fundo e ícones dos itens
+    private void resetSwipeBackgroundAndIcons() {
+        if (trackingRecyclerView != null) {
+            // Percorre todos os itens do RecyclerView
+            for (int i = 0; i < trackingRecyclerView.getChildCount(); i++) {
+                View itemView = trackingRecyclerView.getChildAt(i);
+
+                // Cria o fundo padrão (sem alteração)
+                GradientDrawable backgroundDrawable = createRoundedBackground(Color.parseColor("#000000"));
+                itemView.setBackground(backgroundDrawable);
+
+                // Oculta os ícones de exclusão e edição
+                itemView.findViewById(R.id.delete_icon).setVisibility(View.GONE);
+                itemView.findViewById(R.id.edit_icon).setVisibility(View.GONE);
+            }
+        }
+    }
+
+
+    // Carrega os rastreios do Firebase
     private void loadTrackings() {
         trackingsRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -81,7 +168,7 @@ public class HomeActivity extends AppCompatActivity {
                         trackingList.add(tracking);
                     }
                 }
-                trackingAdapter.notifyDataSetChanged();
+                filterTrackings(searchEditText.getText().toString()); // Refiltra com a pesquisa atual
             }
 
             @Override
@@ -91,9 +178,82 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void deleteTracking(String trackingId) {
+    // Configura a funcionalidade de deslizar para editar/excluir itens
+    private void initializeSwipeToDelete() {
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                Tracking tracking = filteredList.get(position); // Usa a lista filtrada
+
+                if (direction == ItemTouchHelper.LEFT) {
+                    // Deslizar para a esquerda - Edição
+                    Intent intent = new Intent(HomeActivity.this, CreateActivity.class);
+                    intent.putExtra("TRACKING_ID", tracking.getId());
+                    startActivity(intent);
+                } else if (direction == ItemTouchHelper.RIGHT) {
+                    // Deslizar para a direita - Exclusão
+                    new MaterialAlertDialogBuilder(HomeActivity.this)
+                            .setTitle("Confirmar exclusão")
+                            .setMessage("Você tem certeza que deseja excluir este rastreio?")
+                            .setPositiveButton("Excluir", (dialog, which) -> deleteTracking(tracking.getId(), position))
+                            .setNegativeButton("Cancelar", (dialog, which) -> trackingAdapter.notifyItemChanged(position))
+                            .show();
+                }
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+                View itemView = viewHolder.itemView;
+
+                GradientDrawable backgroundDrawable = createRoundedBackground(Color.parseColor("#000000"));
+                float swipePercentage = Math.abs(dX) / itemView.getWidth();
+
+                if (dX > 0) {
+                    backgroundDrawable.setColor(Color.parseColor("#FF0000"));
+                    itemView.setBackground(backgroundDrawable);
+                    ImageView deleteIcon = itemView.findViewById(R.id.delete_icon);
+                    deleteIcon.setVisibility(View.VISIBLE);
+                    deleteIcon.setAlpha(swipePercentage >= 0.1f ? 1.0f : swipePercentage / 0.1f);
+                } else if (dX < 0) {
+                    backgroundDrawable.setColor(Color.parseColor("#008CFF"));
+                    itemView.setBackground(backgroundDrawable);
+                    ImageView editIcon = itemView.findViewById(R.id.edit_icon);
+                    editIcon.setVisibility(View.VISIBLE);
+                    editIcon.setAlpha(swipePercentage >= 0.1f ? 1.0f : swipePercentage / 0.1f);
+                } else {
+                    backgroundDrawable.setColor(Color.parseColor("#000000"));
+                    itemView.setBackground(backgroundDrawable);
+                    itemView.findViewById(R.id.delete_icon).setVisibility(View.GONE);
+                    itemView.findViewById(R.id.edit_icon).setVisibility(View.GONE);
+                }
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(trackingRecyclerView);
+    }
+
+    // Método para criar o fundo arredondado
+    private GradientDrawable createRoundedBackground(int color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(color);
+        drawable.setCornerRadius(8 * getResources().getDisplayMetrics().density);
+        return drawable;
+    }
+
+    // Método para excluir um rastreio
+    private void deleteTracking(String trackingId, int position) {
         trackingsRef.child(trackingId).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                trackingList.removeIf(tracking -> tracking.getId().equals(trackingId)); // Remove da lista original
+                filteredList.removeIf(tracking -> tracking.getId().equals(trackingId)); // Remove da lista filtrada
+                trackingAdapter.notifyItemRemoved(position);
                 Toast.makeText(HomeActivity.this, "Tracking deleted successfully.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(HomeActivity.this, "Failed to delete tracking.", Toast.LENGTH_SHORT).show();
@@ -101,14 +261,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void logout() {
-        mAuth.signOut();
-        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish(); // Finaliza a atividade atual
-    }
-
+    // Adapter do RecyclerView
     private class TrackingAdapter extends RecyclerView.Adapter<TrackingAdapter.TrackingViewHolder> {
 
         private final List<Tracking> trackingList;
@@ -129,28 +282,10 @@ public class HomeActivity extends AppCompatActivity {
             Tracking tracking = trackingList.get(position);
             holder.trackingNameText.setText(tracking.getTrackingName());
 
-            // Handle item click to navigate to TrackingActivity
             holder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(HomeActivity.this, TrackingActivity.class);
-                intent.putExtra("TRACKING_ID", tracking.getId()); // Passa o ID do rastreio para a TrackingActivity
+                intent.putExtra("TRACKING_ID", tracking.getId());
                 startActivity(intent);
-            });
-
-            // Handle edit button click
-            holder.editButton.setOnClickListener(v -> {
-                Intent intent = new Intent(HomeActivity.this, CreateActivity.class);
-                intent.putExtra("TRACKING_ID", tracking.getId()); // Passa o ID do rastreio para a CreateActivity
-                startActivity(intent);
-            });
-
-            // Handle delete button click with confirmation dialog
-            holder.deleteButton.setOnClickListener(v -> {
-                new AlertDialog.Builder(HomeActivity.this)
-                        .setTitle("Confirmar exclusão")
-                        .setMessage("Você tem certeza de que deseja excluir este rastreio?")
-                        .setPositiveButton("Excluir", (dialog, which) -> deleteTracking(tracking.getId()))
-                        .setNegativeButton("Cancelar", null)
-                        .show();
             });
         }
 
@@ -161,36 +296,25 @@ public class HomeActivity extends AppCompatActivity {
 
         class TrackingViewHolder extends RecyclerView.ViewHolder {
             TextView trackingNameText;
-            ImageButton editButton, deleteButton;
 
             TrackingViewHolder(View itemView) {
                 super(itemView);
                 trackingNameText = itemView.findViewById(R.id.tracking_name);
-                editButton = itemView.findViewById(R.id.edit_button);
-                deleteButton = itemView.findViewById(R.id.delete_button);
             }
         }
     }
 
-
+    // Classe Tracking
     private static class Tracking {
         private String id;
         private String trackingName;
-        private String schoolAddress;
-        private String homeAddress;
-        private String transportUid;
-        private String studentUid;
 
         public Tracking() {
-            // Default constructor required for calls to DataSnapshot.getValue(Tracking.class)
+            // Construtor padrão necessário para a leitura do Firebase
         }
 
-        public Tracking(String trackingName, String schoolAddress, String homeAddress, String transportUid, String studentUid) {
+        public Tracking(String trackingName) {
             this.trackingName = trackingName;
-            this.schoolAddress = schoolAddress;
-            this.homeAddress = homeAddress;
-            this.transportUid = transportUid;
-            this.studentUid = studentUid;
         }
 
         public String getId() {

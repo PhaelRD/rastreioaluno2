@@ -19,4 +19,13 @@
     <!-- Cores de Erro e Avisos -->
     <color name="errorColor">#B00020</color>
     <color name="warningColor">#FF9800</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="colorEdit">#FFEB3B</color> <!-- Amarelo -->
+    <color name="colorDelete">#F44336</color> <!-- Vermelho -->
+
+    <color name="colorHint">#A9A9A9</color>
+
 </resources>

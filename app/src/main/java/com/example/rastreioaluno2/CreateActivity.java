@@ -69,7 +69,7 @@ public class CreateActivity extends AppCompatActivity {
         if (trackingId != null) {
             isEditing = true;
             loadTrackingData(trackingId);
-            registerTrackingButton.setText("Update Tracking");
+            registerTrackingButton.setText("Editar");
         }
 
         // Set click listener for the register/update button
